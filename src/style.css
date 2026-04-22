@@ -344,7 +344,125 @@ button.next-btn:hover { transform: translateY(-2px); }
 .pop { animation: pop .35s ease; }
 
 /* ── RESPONSIVE ── */
-@media (max-width: 500px) {
+
+/* Tablet / landscape phone  (≤ 900px) */
+@media (max-width: 900px) {
+  .number-grid {
+    grid-template-columns: repeat(5, 1fr);
+    max-width: 620px;
+    gap: 10px;
+  }
+  .seq-grid {
+    grid-template-columns: repeat(5, 1fr);
+    max-width: 620px;
+  }
+  .num-card { min-width: 0; }
+}
+
+/* Mobile portrait  (≤ 600px) */
+@media (max-width: 600px) {
+
+  /* Nav — logo on its own line, links wrap and center */
+  nav {
+    padding: 10px 14px;
+    gap: 6px;
+    justify-content: center;
+  }
+  nav .logo {
+    width: 100%;
+    text-align: center;
+    margin-right: 0;
+    font-size: 1.2rem;
+    padding-bottom: 4px;
+  }
+  nav a { font-size: .78rem; padding: 5px 9px; }
+
+  /* Hero */
+  .hero { padding: 32px 16px 24px; }
   .hero h1 { font-size: 2rem; }
-  .question-box .eq { font-size: 2rem; }
+  .hero p  { font-size: 1rem; }
+
+  /* Home cards — 2 per row */
+  .card-grid { gap: 14px; padding: 24px 16px 40px; }
+  .card { width: calc(50% - 7px); padding: 24px 14px; }
+  .card .icon { font-size: 2.6rem; margin-bottom: 10px; }
+  .card h2    { font-size: 1rem; }
+  .card p     { font-size: .82rem; }
+
+  /* Page header */
+  .page-header { padding: 22px 16px 12px; }
+  .page-header h1 { font-size: 1.8rem; }
+  .page-header p  { font-size: .95rem; }
+
+  /* Number grid — 4 columns */
+  .number-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 8px 14px 30px;
+    max-width: 100%;
+    overflow-x: visible;
+  }
+  .num-card { padding: 10px 4px; min-width: 0; }
+  .num-card .big  { font-size: 1.7rem; }
+  .num-card .word { font-size: .6rem; }
+  .num-card .dots { font-size: .78rem; margin-top: 4px; line-height: 1.4; }
+
+  /* Tabs */
+  .tab-bar { gap: 8px; padding: 0 14px 16px; }
+  .tab-bar button { padding: 8px 16px; font-size: .88rem; }
+
+  /* Sequence game grid — 4 columns */
+  .seq-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 0 14px 14px;
+    max-width: 100%;
+  }
+  .seq-cell { font-size: 1.2rem; min-height: 44px; border-radius: 10px; }
+  .seq-cell.blank { font-size: 1rem; }
+
+  /* Sequence bank tiles */
+  .bank { gap: 10px; padding: 4px 14px 16px; max-width: 100%; }
+  .bank-tile { width: 50px; height: 50px; font-size: 1.2rem; border-radius: 10px; }
+  .seq-feedback { font-size: 1rem; padding: 6px 14px; }
+  .win-banner { font-size: 1.3rem; padding: 12px; margin: 0 14px 12px; }
+  .new-game-btn { font-size: 1rem; padding: 10px 28px; }
+
+  /* Game wrap (addition / subtraction / multiplication) */
+  .game-wrap { padding: 14px 14px 40px; }
+  .score-bar { padding: 8px 16px; font-size: .88rem; margin-bottom: 16px; }
+  .score-bar .stars { font-size: 1rem; }
+
+  .question-box { padding: 24px 14px; margin-bottom: 14px; }
+  .question-box .visuals { font-size: 1.5rem; min-height: 44px; margin-bottom: 12px; }
+  .question-box .eq { font-size: 2rem; letter-spacing: 2px; }
+  .question-box .eq span.blank { min-width: 44px; border-bottom-width: 3px; }
+
+  .answer-row { gap: 8px; margin-top: 16px; }
+  .answer-row input[type=number] { width: 82px; font-size: 1.7rem; padding: 6px; }
+  button.check-btn { font-size: 1.1rem; padding: 10px 22px; }
+
+  .feedback { font-size: 1.25rem; padding: 6px; min-height: 40px; }
+  button.next-btn { font-size: 1rem; padding: 9px 28px; }
+
+  /* Multiplication selector */
+  .mult-selector { gap: 8px; }
+  .mult-selector button { width: 44px; height: 44px; font-size: 1.1rem; }
+
+  /* Multiplication reference table */
+  .mult-table { padding: 14px 12px; }
+  .mult-table h3   { font-size: 1.1rem; }
+  .mult-table .row { font-size: .95rem; }
+}
+
+/* Very small phones  (≤ 360px) */
+@media (max-width: 360px) {
+  nav a { font-size: .72rem; padding: 4px 7px; }
+  .card { width: 100%; max-width: 280px; }
+  .number-grid, .seq-grid { gap: 6px; padding-left: 10px; padding-right: 10px; }
+  .num-card .big  { font-size: 1.4rem; }
+  .num-card .dots { font-size: .68rem; }
+  .question-box .eq { font-size: 1.7rem; letter-spacing: 1px; }
+  .answer-row input[type=number] { width: 72px; font-size: 1.5rem; }
+  .mult-selector button { width: 38px; height: 38px; font-size: 1rem; }
 }
