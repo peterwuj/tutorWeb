@@ -68,11 +68,13 @@ function checkAnswer() {
   if (val === correct) {
     score++;
     streak++;
+    if (typeof playCorrect === 'function') playCorrect();
     fb.textContent = pick(['Awesome! 🎉','You got it! ⭐','Fantastic! 🌈','Super! 🦄','Great job! 👏']);
     fb.className = 'feedback correct';
     document.getElementById('eq').innerHTML = `${a} ${op} ${b} = <span style="color:#00b894">${correct}</span>`;
   } else {
     streak = 0;
+    if (typeof playWrong === 'function') playWrong();
     fb.textContent = `Not quite — the answer is ${correct}. Keep trying! 💪`;
     fb.className = 'feedback wrong';
     document.getElementById('eq').innerHTML = `${a} ${op} ${b} = <span style="color:#e17055">${correct}</span>`;

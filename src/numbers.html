@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Numbers – Math Fun</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="sounds.js"></script>
   <style>
     body { background: #f0fffe; }
     nav  { background: #4ecdc4; }
@@ -85,11 +86,13 @@ for (let n = 1; n <= 20; n++) {
     `<div class="big">${n}</div>` +
     `<div class="word">${WORDS[n]}</div>` +
     `<div class="dots">${row1}${row2}</div>`;
+  card.addEventListener('mouseenter', playHover);
   card.onclick = () => openSpotlight(n);
   grid.appendChild(card);
 }
 
 function openSpotlight(n) {
+  playTap();
   document.getElementById('sp-num').textContent  = n;
   document.getElementById('sp-word').textContent = WORDS[n];
   const row1 = EMOJI.slice(0, Math.min(n, 10)).join('');
@@ -165,6 +168,7 @@ function renderSeq() {
     tile.className   = 'bank-tile';
     tile.textContent = n;
     tile.id          = `bank-${n}`;
+    tile.addEventListener('mouseenter', playHover);
     tile.onclick     = () => selectTile(n, tile);
     bank.appendChild(tile);
   });
@@ -173,6 +177,7 @@ function renderSeq() {
 }
 
 function selectTile(n, tile) {
+  playTap();
   document.querySelectorAll('.bank-tile').forEach(t => t.classList.remove('selected'));
   if (selectedNum === n) {
     selectedNum = null;
@@ -194,6 +199,7 @@ function placeNumber(slotNum, cell) {
   }
   if (selectedNum === slotNum) {
     // ✅ Correct
+    playCorrect();
     cell.textContent = slotNum;
     cell.className   = 'seq-cell correct-placed';
     cell.onclick     = null;
@@ -207,6 +213,7 @@ function placeNumber(slotNum, cell) {
     if (removedSet.size === 0) showWin();
   } else {
     // ❌ Wrong
+    playWrong();
     cell.classList.add('shake');
     setTimeout(() => cell.classList.remove('shake'), 450);
     fb.textContent = `Hmm, ${selectedNum} doesn't go there. Try a different box! 🤔`;
@@ -221,6 +228,7 @@ function updateProgress() {
 }
 
 function showWin() {
+  playWin();
   document.getElementById('winBanner').style.display = 'block';
   document.getElementById('seqFeedback').textContent = '';
 }

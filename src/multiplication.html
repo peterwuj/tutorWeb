@@ -81,6 +81,7 @@ for (let i = 1; i <= 10; i++) {
 }
 
 function selectTable(n, btn) {
+  playTap();
   document.querySelectorAll('.mult-selector button').forEach(b => b.classList.remove('sel'));
   btn.classList.add('sel');
   selected = n;
@@ -128,11 +129,13 @@ function checkMult() {
   if (isNaN(val)) { fb.textContent = 'Please type a number! 🔢'; fb.className = 'feedback'; return; }
   if (val === correct) {
     score++; streak++;
+    playCorrect();
     fb.textContent = pick(['Awesome! 🎉', 'You got it! ⭐', 'Fantastic! 🌈', 'Super! 🦄']);
     fb.className = 'feedback correct';
     document.getElementById('eq').innerHTML = `${a} × ${b} = <span style="color:#00b894">${correct}</span>`;
   } else {
     streak = 0;
+    playWrong();
     fb.textContent = `Not quite — the answer is ${correct}. Try again! 💪`;
     fb.className = 'feedback wrong';
     document.getElementById('eq').innerHTML = `${a} × ${b} = <span style="color:#e17055">${correct}</span>`;
@@ -156,5 +159,6 @@ document.addEventListener('keydown', e => {
   }
 });
 </script>
+<script src="sounds.js"></script>
 </body>
 </html>
