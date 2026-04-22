@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Numbers – Math Fun</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { background: #f0fffe; }
+    nav  { background: #4ecdc4; }
+    .page-header h1 { color: #4ecdc4; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="logo">🌟 Math Fun</span>
+  <a href="index.html">Home</a>
+  <a href="numbers.html" class="active">Numbers</a>
+  <a href="addition.html">Addition</a>
+  <a href="subtraction.html">Subtraction</a>
+  <a href="multiplication.html">Multiplication</a>
+</nav>
+
+<div class="page-header">
+  <h1>🔢 Learn the Numbers!</h1>
+  <p>Click a number to see it up close, or play the Sequence Game!</p>
+</div>
+
+<div class="tab-bar">
+  <button id="tab-learn" class="active" onclick="showSection('learn')">🔢 Learn Numbers</button>
+  <button id="tab-game" onclick="showSection('game')">🎮 Sequence Game</button>
+</div>
+
+<!-- ── LEARN SECTION ── -->
+<div id="section-learn">
+  <div class="number-grid" id="grid"></div>
+</div>
+
+<!-- ── SEQUENCE GAME SECTION ── -->
+<div id="section-game" style="display:none">
+  <p style="text-align:center; font-size:1.05rem; color:#555; padding: 0 20px 10px;">
+    Pick a number from the bank below, then click the empty box where it belongs!
+  </p>
+
+  <div class="seq-progress" id="seqProgress"></div>
+  <div class="win-banner"   id="winBanner">🎉 Amazing! You got them all right! 🎉</div>
+
+  <div class="seq-grid" id="seqGrid"></div>
+
+  <div class="bank-label">👇 Missing Numbers — click one to select it:</div>
+  <div class="bank" id="seqBank"></div>
+
+  <div class="seq-feedback" id="seqFeedback"></div>
+
+  <button class="new-game-btn" onclick="newSequenceGame()">🔀 New Game</button>
+</div>
+
+<!-- ── SPOTLIGHT MODAL ── -->
+<div id="spotlight" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:100; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:28px; padding:40px 50px; text-align:center; max-width:340px; width:90%; box-shadow:0 12px 40px rgba(0,0,0,.2);">
+    <div id="sp-num"  style="font-size:6rem; font-weight:900; color:#4ecdc4; line-height:1;"></div>
+    <div id="sp-word" style="font-size:1.6rem; font-weight:700; margin:8px 0 16px; text-transform:uppercase; letter-spacing:1px;"></div>
+    <div id="sp-dots" style="font-size:2rem; line-height:1.8; margin-bottom:20px;"></div>
+    <button onclick="closeSpotlight()" style="padding:10px 32px; border:none; border-radius:50px; background:#4ecdc4; color:#fff; font-size:1.1rem; font-weight:700; cursor:pointer;">Close ✕</button>
+  </div>
+</div>
+
+<script>
+const WORDS = ['','One','Two','Three','Four','Five','Six','Seven','Eight',
+               'Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen',
+               'Sixteen','Seventeen','Eighteen','Nineteen','Twenty'];
+
+const EMOJI = ['🍎','🐶','🌟','🦋','🌈','🐸','🌻','🍦','🦄','🎈',
+               '🍕','🐙','🎀','🦁','🌙','🚀','🍓','🐬','🎵','🎉'];
+
+// ── BUILD LEARN GRID (10 × 2) ──────────────────────────────────────
+const grid = document.getElementById('grid');
+for (let n = 1; n <= 20; n++) {
+  const row1 = EMOJI.slice(0, Math.min(n, 10)).join('');
+  const row2 = n > 10 ? '<br>' + EMOJI.slice(0, n - 10).join('') : '';
+  const card = document.createElement('div');
+  card.className = 'num-card';
+  card.innerHTML =
+    `<div class="big">${n}</div>` +
+    `<div class="word">${WORDS[n]}</div>` +
+    `<div class="dots">${row1}${row2}</div>`;
+  card.onclick = () => openSpotlight(n);
+  grid.appendChild(card);
+}
+
+function openSpotlight(n) {
+  document.getElementById('sp-num').textContent  = n;
+  document.getElementById('sp-word').textContent = WORDS[n];
+  const row1 = EMOJI.slice(0, Math.min(n, 10)).join('');
+  const row2 = n > 10 ? '<br>' + EMOJI.slice(0, n - 10).join('') : '';
+  document.getElementById('sp-dots').innerHTML = row1 + row2;
+  document.getElementById('spotlight').style.display = 'flex';
+}
+function closeSpotlight() {
+  document.getElementById('spotlight').style.display = 'none';
+}
+document.getElementById('spotlight').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeSpotlight();
+});
+
+// ── TABS ───────────────────────────────────────────────────────────
+let gameInitialized = false;
+function showSection(which) {
+  document.getElementById('section-learn').style.display = which === 'learn' ? '' : 'none';
+  document.getElementById('section-game').style.display  = which === 'game'  ? '' : 'none';
+  document.getElementById('tab-learn').classList.toggle('active', which === 'learn');
+  document.getElementById('tab-game').classList.toggle('active', which === 'game');
+  if (which === 'game' && !gameInitialized) { newSequenceGame(); gameInitialized = true; }
+}
+
+// ── SEQUENCE GAME ──────────────────────────────────────────────────
+let removedSet    = new Set();
+let totalRemoved  = 0;
+let selectedNum   = null;
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function newSequenceGame() {
+  const count = 5 + Math.floor(Math.random() * 4); // 5–8 missing numbers
+  const removed = shuffle([...Array(20).keys()].map(i => i + 1)).slice(0, count);
+  removedSet   = new Set(removed);
+  totalRemoved = count;
+  selectedNum  = null;
+  document.getElementById('winBanner').style.display   = 'none';
+  document.getElementById('seqFeedback').textContent   = '';
+  document.getElementById('seqFeedback').className     = 'seq-feedback';
+  renderSeq();
+}
+
+function renderSeq() {
+  // Build the 10×2 grid
+  const seqGrid = document.getElementById('seqGrid');
+  seqGrid.innerHTML = '';
+  for (let n = 1; n <= 20; n++) {
+    const cell = document.createElement('div');
+    if (removedSet.has(n)) {
+      cell.className    = 'seq-cell blank';
+      cell.textContent  = '?';
+      cell.dataset.n    = n;
+      cell.onclick      = () => placeNumber(n, cell);
+    } else {
+      cell.className   = 'seq-cell';
+      cell.textContent = n;
+    }
+    seqGrid.appendChild(cell);
+  }
+
+  // Build shuffled bank
+  const bank = document.getElementById('seqBank');
+  bank.innerHTML = '';
+  shuffle([...removedSet]).forEach(n => {
+    const tile       = document.createElement('div');
+    tile.className   = 'bank-tile';
+    tile.textContent = n;
+    tile.id          = `bank-${n}`;
+    tile.onclick     = () => selectTile(n, tile);
+    bank.appendChild(tile);
+  });
+
+  updateProgress();
+}
+
+function selectTile(n, tile) {
+  document.querySelectorAll('.bank-tile').forEach(t => t.classList.remove('selected'));
+  if (selectedNum === n) {
+    selectedNum = null;
+    document.getElementById('seqFeedback').textContent = '';
+  } else {
+    selectedNum = n;
+    tile.classList.add('selected');
+    document.getElementById('seqFeedback').textContent = `Now click the box where  ${n}  belongs! 👆`;
+    document.getElementById('seqFeedback').className   = 'seq-feedback';
+  }
+}
+
+function placeNumber(slotNum, cell) {
+  const fb = document.getElementById('seqFeedback');
+  if (selectedNum === null) {
+    fb.textContent = '👇 First, pick a number from the bank below!';
+    fb.className   = 'seq-feedback';
+    return;
+  }
+  if (selectedNum === slotNum) {
+    // ✅ Correct
+    cell.textContent = slotNum;
+    cell.className   = 'seq-cell correct-placed';
+    cell.onclick     = null;
+    removedSet.delete(slotNum);
+    const tile = document.getElementById(`bank-${selectedNum}`);
+    if (tile) tile.classList.add('used');
+    selectedNum  = null;
+    fb.textContent = pick(['Great! 🎉','Correct! ⭐','You got it! 🌟','Awesome! 🦄','Nice one! 👏']);
+    fb.className   = 'seq-feedback correct';
+    updateProgress();
+    if (removedSet.size === 0) showWin();
+  } else {
+    // ❌ Wrong
+    cell.classList.add('shake');
+    setTimeout(() => cell.classList.remove('shake'), 450);
+    fb.textContent = `Hmm, ${selectedNum} doesn't go there. Try a different box! 🤔`;
+    fb.className   = 'seq-feedback wrong';
+  }
+}
+
+function updateProgress() {
+  const placed = totalRemoved - removedSet.size;
+  document.getElementById('seqProgress').textContent =
+    `Progress: ${placed} / ${totalRemoved}  ${'⭐'.repeat(placed)}`;
+}
+
+function showWin() {
+  document.getElementById('winBanner').style.display = 'block';
+  document.getElementById('seqFeedback').textContent = '';
+}
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+</script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multiplication – Math Fun</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { background: #f8f5ff; }
+    nav  { background: #a29bfe; }
+    .page-header h1 { color: #a29bfe; }
+    button.check-btn { background: #a29bfe; box-shadow: 0 4px 12px rgba(162,155,254,.5); }
+    button.next-btn  { background: #a29bfe; box-shadow: 0 4px 12px rgba(162,155,254,.4); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="logo">🌟 Math Fun</span>
+  <a href="index.html">Home</a>
+  <a href="numbers.html">Numbers</a>
+  <a href="addition.html">Addition</a>
+  <a href="subtraction.html">Subtraction</a>
+  <a href="multiplication.html" class="active">Multiplication</a>
+</nav>
+
+<div class="page-header">
+  <h1>✖️ Multiplication!</h1>
+  <p>Pick a times table to study, then practice it.</p>
+</div>
+
+<div class="game-wrap">
+  <!-- Multiplier selector -->
+  <div style="text-align:center; margin-bottom:8px; font-weight:700; color:#a29bfe; font-size:1rem;">
+    Choose a times table:
+  </div>
+  <div class="mult-selector" id="selector"></div>
+
+  <!-- Reference table -->
+  <div class="mult-table" id="refTable" style="display:none">
+    <h3 id="tableTitle"></h3>
+    <div id="tableRows"></div>
+  </div>
+
+  <!-- Practice game -->
+  <div id="practiceArea" style="display:none">
+    <div class="score-bar">
+      <span>Score: <strong id="score">0</strong></span>
+      <span class="stars" id="stars"></span>
+      <span>Streak: <strong id="streak">0</strong> 🔥</span>
+    </div>
+
+    <div class="question-box">
+      <div class="visuals" id="visuals" style="font-size:1.5rem; line-height:1.6; letter-spacing:2px;"></div>
+      <div class="eq" id="eq"></div>
+      <div class="answer-row">
+        <input type="number" id="ans" min="0" max="100" placeholder="?" />
+        <button class="check-btn" onclick="checkMult()">Check ✓</button>
+      </div>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="nextBtn" style="display:none" onclick="nextMult()">Next Question ▶</button>
+  </div>
+</div>
+
+<script>
+const EMOJI = ['🍎','🐶','🌟','🦋','🌈','🐸','🌻','🍦','🦄','🎈'];
+
+let selected = null;
+let a = 1, b = 1, correct = 0;
+let score = 0, streak = 0;
+
+// Build selector buttons
+const sel = document.getElementById('selector');
+for (let i = 1; i <= 10; i++) {
+  const btn = document.createElement('button');
+  btn.textContent = i;
+  btn.onclick = () => selectTable(i, btn);
+  sel.appendChild(btn);
+}
+
+function selectTable(n, btn) {
+  document.querySelectorAll('.mult-selector button').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  selected = n;
+  score = 0; streak = 0;
+
+  // Show reference table
+  document.getElementById('refTable').style.display = 'block';
+  document.getElementById('tableTitle').textContent = `${n} Times Table`;
+  const rows = document.getElementById('tableRows');
+  rows.innerHTML = '';
+  for (let i = 1; i <= 10; i++) {
+    const d = document.createElement('div');
+    d.className = 'row';
+    d.textContent = `${n} × ${i} = ${n * i}`;
+    rows.appendChild(d);
+  }
+
+  // Show practice
+  document.getElementById('practiceArea').style.display = 'block';
+  updateScore();
+  nextMult();
+}
+
+function nextMult() {
+  if (!selected) return;
+  a = selected;
+  b = Math.ceil(Math.random() * 10);
+  correct = a * b;
+
+  // Visual: a icons per row, b rows
+  const emoji = EMOJI[(a - 1) % EMOJI.length];
+  const row = Array(a).fill(emoji).join(' ');
+  document.getElementById('visuals').innerHTML = Array(b).fill(row).join('<br>');
+  document.getElementById('eq').innerHTML = `${a} × ${b} = <span class="blank">?</span>`;
+  document.getElementById('ans').value = '';
+  document.getElementById('ans').focus();
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('nextBtn').style.display = 'none';
+}
+
+function checkMult() {
+  const val = parseInt(document.getElementById('ans').value, 10);
+  const fb  = document.getElementById('feedback');
+  if (isNaN(val)) { fb.textContent = 'Please type a number! 🔢'; fb.className = 'feedback'; return; }
+  if (val === correct) {
+    score++; streak++;
+    fb.textContent = pick(['Awesome! 🎉', 'You got it! ⭐', 'Fantastic! 🌈', 'Super! 🦄']);
+    fb.className = 'feedback correct';
+    document.getElementById('eq').innerHTML = `${a} × ${b} = <span style="color:#00b894">${correct}</span>`;
+  } else {
+    streak = 0;
+    fb.textContent = `Not quite — the answer is ${correct}. Try again! 💪`;
+    fb.className = 'feedback wrong';
+    document.getElementById('eq').innerHTML = `${a} × ${b} = <span style="color:#e17055">${correct}</span>`;
+  }
+  updateScore();
+  document.getElementById('nextBtn').style.display = 'block';
+}
+
+function updateScore() {
+  document.getElementById('score').textContent = score;
+  document.getElementById('streak').textContent = streak;
+  document.getElementById('stars').textContent = '⭐'.repeat(Math.min(streak, 5));
+}
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (document.getElementById('nextBtn').style.display !== 'none') nextMult();
+    else checkMult();
+  }
+});
+</script>
+</body>
+</html>

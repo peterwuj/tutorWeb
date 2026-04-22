@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Addition – Math Fun</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { background: #fffef0; }
+    nav  { background: #f9ca24; }
+    nav a, nav .logo { color: #5d4e00; }
+    nav a:hover, nav a.active { background: rgba(0,0,0,.12); }
+    .page-header h1 { color: #f9ca24; -webkit-text-stroke: 1px #c9a800; }
+    button.check-btn { background: #f9ca24; color: #5d4e00; box-shadow: 0 4px 12px rgba(249,202,36,.5); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="logo">🌟 Math Fun</span>
+  <a href="index.html">Home</a>
+  <a href="numbers.html">Numbers</a>
+  <a href="addition.html" class="active">Addition</a>
+  <a href="subtraction.html">Subtraction</a>
+  <a href="multiplication.html">Multiplication</a>
+</nav>
+
+<div class="page-header">
+  <h1>➕ Addition!</h1>
+  <p>Add the numbers together and type your answer.</p>
+</div>
+
+<div class="game-wrap">
+  <div class="score-bar">
+    <span>Score: <strong id="score">0</strong></span>
+    <span class="stars" id="stars"></span>
+    <span>Streak: <strong id="streak">0</strong> 🔥</span>
+  </div>
+
+  <div class="question-box">
+    <div class="visuals" id="visuals"></div>
+    <div class="eq" id="eq"></div>
+    <div class="answer-row">
+      <input type="number" id="ans" min="0" max="20" placeholder="?" autofocus />
+      <button class="check-btn" onclick="checkAnswer()">Check ✓</button>
+    </div>
+  </div>
+
+  <div class="feedback" id="feedback"></div>
+  <button class="next-btn" id="nextBtn" style="display:none" onclick="nextQuestion()">Next Question ▶</button>
+</div>
+
+<script src="game.js"></script>
+<script>
+initGame('addition');
+</script>
+</body>
+</html>
