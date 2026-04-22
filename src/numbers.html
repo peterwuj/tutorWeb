@@ -92,7 +92,7 @@ for (let n = 1; n <= 20; n++) {
 }
 
 function openSpotlight(n) {
-  playTap();
+  speak(WORDS[n]);
   document.getElementById('sp-num').textContent  = n;
   document.getElementById('sp-word').textContent = WORDS[n];
   const row1 = EMOJI.slice(0, Math.min(n, 10)).join('');
@@ -177,7 +177,7 @@ function renderSeq() {
 }
 
 function selectTile(n, tile) {
-  playTap();
+  speak(WORDS[n]);
   document.querySelectorAll('.bank-tile').forEach(t => t.classList.remove('selected'));
   if (selectedNum === n) {
     selectedNum = null;

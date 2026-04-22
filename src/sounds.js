@@ -99,6 +99,18 @@
     });
   };
 
+  // Speak a word/phrase using the browser's built-in text-to-speech engine.
+  // Slightly slower rate and raised pitch make it friendlier for young kids.
+  window.speak = function (text) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();          // stop any in-progress speech
+    const u   = new SpeechSynthesisUtterance(text);
+    u.rate    = 0.88;
+    u.pitch   = 1.15;
+    u.volume  = 1;
+    window.speechSynthesis.speak(u);
+  };
+
   // Auto-attach hover blip to static interactive elements after DOM ready.
   // Dynamic elements (num-cards, bank tiles) attach it themselves when created.
   document.addEventListener('DOMContentLoaded', function () {
