@@ -69,15 +69,21 @@ function checkAnswer() {
     score++;
     streak++;
     if (typeof playCorrect === 'function') playCorrect();
-    fb.textContent = pick(['Awesome! 🎉','You got it! ⭐','Fantastic! 🌈','Super! 🦄','Great job! 👏']);
+    const praise = pick(['Awesome! 🎉','You got it! ⭐','Fantastic! 🌈','Super! 🦄','Great job! 👏']);
+    fb.textContent = praise;
     fb.className = 'feedback correct';
     document.getElementById('eq').innerHTML = `${a} ${op} ${b} = <span style="color:#00b894">${correct}</span>`;
+    if (window._ninja) {
+      const pose = streak >= 3 ? 'celebrate' : 'correct';
+      window._ninja.pose(pose, 2000).say(praise, 2000);
+    }
   } else {
     streak = 0;
     if (typeof playWrong === 'function') playWrong();
     fb.textContent = `Not quite — the answer is ${correct}. Keep trying! 💪`;
     fb.className = 'feedback wrong';
     document.getElementById('eq').innerHTML = `${a} ${op} ${b} = <span style="color:#e17055">${correct}</span>`;
+    if (window._ninja) window._ninja.pose('wrong', 1800).say('Try again! 💪', 1800);
   }
 
   updateScore();

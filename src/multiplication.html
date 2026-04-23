@@ -130,15 +130,21 @@ function checkMult() {
   if (val === correct) {
     score++; streak++;
     playCorrect();
-    fb.textContent = pick(['Awesome! 🎉', 'You got it! ⭐', 'Fantastic! 🌈', 'Super! 🦄']);
+    const praise = pick(['Awesome! 🎉', 'You got it! ⭐', 'Fantastic! 🌈', 'Super! 🦄']);
+    fb.textContent = praise;
     fb.className = 'feedback correct';
     document.getElementById('eq').innerHTML = `${a} × ${b} = <span style="color:#00b894">${correct}</span>`;
+    if (window._ninja) {
+      const pose = streak >= 3 ? 'celebrate' : 'correct';
+      window._ninja.pose(pose, 2000).say(praise, 2000);
+    }
   } else {
     streak = 0;
     playWrong();
     fb.textContent = `Not quite — the answer is ${correct}. Try again! 💪`;
     fb.className = 'feedback wrong';
     document.getElementById('eq').innerHTML = `${a} × ${b} = <span style="color:#e17055">${correct}</span>`;
+    if (window._ninja) window._ninja.pose('wrong', 1800).say('Try again! 💪', 1800);
   }
   updateScore();
   document.getElementById('nextBtn').style.display = 'block';
@@ -160,5 +166,14 @@ document.addEventListener('keydown', e => {
 });
 </script>
 <script src="sounds.js"></script>
+<script src="ninja-avatar.js"></script>
+<script>
+const _ninjaCorner = Object.assign(document.createElement('div'), {
+  style: 'position:fixed;bottom:16px;right:16px;z-index:50'
+});
+document.body.appendChild(_ninjaCorner);
+window._ninja = new NinjaAvatar(_ninjaCorner, { size: 110 });
+window._ninja.pose('think').say('Choose your table! 🥷', 2400);
+</script>
 </body>
 </html>

@@ -51,7 +51,15 @@
 
 <script src="sounds.js"></script>
 <script src="game.js"></script>
+<script src="ninja-avatar.js"></script>
 <script>
+const _ninjaCorner = Object.assign(document.createElement('div'), {
+  style: 'position:fixed;bottom:16px;right:16px;z-index:50'
+});
+document.body.appendChild(_ninjaCorner);
+window._ninja = new NinjaAvatar(_ninjaCorner, { size: 110 });
+window._ninja.pose('wave', 2200).say('Ready to train! 🥷', 2200);
+
 initGame('addition');
 </script>
 </body>

@@ -113,6 +113,7 @@
 </div>
 
 <script src="sounds.js"></script>
+<script src="ninja-avatar.js"></script>
 <script>
 const SHURIKENS = ['⭐','🌟','💫','🌀'];
 
@@ -138,6 +139,15 @@ function spawnSmoke(x, y) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+  // Ninja avatar in the bottom-right corner
+  const ninjaCorner = Object.assign(document.createElement('div'), {
+    style: 'position:fixed;bottom:16px;right:16px;z-index:50'
+  });
+  document.body.appendChild(ninjaCorner);
+  const homeNinja = new NinjaAvatar(ninjaCorner, { size: 110 });
+  homeNinja.pose('wave').say('Welcome, ninja! 🥷', 2600);
+  setTimeout(() => homeNinja.pose('idle'), 2800);
+
   // Smoke puff in the hero on load
   const hero = document.querySelector('.hero');
   const rect = hero.getBoundingClientRect();
