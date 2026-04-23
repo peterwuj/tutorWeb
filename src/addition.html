@@ -7,18 +7,16 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="stylesheet" href="style.css" />
   <style>
-    body { background: #fffef0; }
-    nav  { background: #f9ca24; }
-    nav a, nav .logo { color: #5d4e00; }
-    nav a:hover, nav a.active { background: rgba(0,0,0,.12); }
-    .page-header h1 { color: #f9ca24; -webkit-text-stroke: 1px #c9a800; }
-    button.check-btn { background: #f9ca24; color: #5d4e00; box-shadow: 0 4px 12px rgba(249,202,36,.5); }
+    nav  { background: #3a2a00; border-bottom-color: #ffd700; }
+    nav .logo { color: #ffd700; }
+    .page-header h1 { color: #ffd700; }
+    button.check-btn { background: #c8a000; color: #12121e; box-shadow: 0 4px 12px rgba(200,160,0,.5); }
   </style>
 </head>
 <body>
 
 <nav>
-  <span class="logo">🌟 Math Fun</span>
+  <span class="logo">🥷 Ninja Math</span>
   <a href="index.html">Home</a>
   <a href="numbers.html">Numbers</a>
   <a href="addition.html" class="active">Addition</a>
@@ -27,8 +25,8 @@
 </nav>
 
 <div class="page-header">
-  <h1>➕ Addition!</h1>
-  <p>Add the numbers together and type your answer.</p>
+  <h1>⚔️ Addition!</h1>
+  <p>Master the art of addition, young ninja!</p>
 </div>
 
 <div class="game-wrap">
@@ -43,12 +41,12 @@
     <div class="eq" id="eq"></div>
     <div class="answer-row">
       <input type="number" id="ans" min="0" max="20" placeholder="?" autofocus />
-      <button class="check-btn" onclick="checkAnswer()">Check ✓</button>
+      <button class="check-btn" onclick="checkAnswer()">Strike! 🥷</button>
     </div>
   </div>
 
   <div class="feedback" id="feedback"></div>
-  <button class="next-btn" id="nextBtn" style="display:none" onclick="nextQuestion()">Next Question ▶</button>
+  <button class="next-btn" id="nextBtn" style="display:none" onclick="nextQuestion()">Next Mission ▶</button>
 </div>
 
 <script src="sounds.js"></script>

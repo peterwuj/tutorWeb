@@ -7,17 +7,16 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="stylesheet" href="style.css" />
   <style>
-    body { background: #f8f5ff; }
-    nav  { background: #a29bfe; }
-    .page-header h1 { color: #a29bfe; }
-    button.check-btn { background: #a29bfe; box-shadow: 0 4px 12px rgba(162,155,254,.5); }
-    button.next-btn  { background: #a29bfe; box-shadow: 0 4px 12px rgba(162,155,254,.4); }
+    nav  { background: #1e0a40; border-bottom-color: #a855f7; }
+    .page-header h1 { color: #a855f7; }
+    button.check-btn { background: #a855f7; box-shadow: 0 4px 12px rgba(168,85,247,.5); }
+    button.next-btn  { background: #a855f7; color: #fff; box-shadow: 0 4px 12px rgba(168,85,247,.4); }
   </style>
 </head>
 <body>
 
 <nav>
-  <span class="logo">🌟 Math Fun</span>
+  <span class="logo">🥷 Ninja Math</span>
   <a href="index.html">Home</a>
   <a href="numbers.html">Numbers</a>
   <a href="addition.html">Addition</a>
@@ -26,8 +25,8 @@
 </nav>
 
 <div class="page-header">
-  <h1>✖️ Multiplication!</h1>
-  <p>Pick a times table to study, then practice it.</p>
+  <h1>🌟 Multiplication!</h1>
+  <p>Choose your training scroll and unleash the shuriken!</p>
 </div>
 
 <div class="game-wrap">
@@ -56,17 +55,17 @@
       <div class="eq" id="eq"></div>
       <div class="answer-row">
         <input type="number" id="ans" min="0" max="100" placeholder="?" />
-        <button class="check-btn" onclick="checkMult()">Check ✓</button>
+        <button class="check-btn" onclick="checkMult()">Strike! 🥷</button>
       </div>
     </div>
 
     <div class="feedback" id="feedback"></div>
-    <button class="next-btn" id="nextBtn" style="display:none" onclick="nextMult()">Next Question ▶</button>
+    <button class="next-btn" id="nextBtn" style="display:none" onclick="nextMult()">Next Mission ▶</button>
   </div>
 </div>
 
 <script>
-const EMOJI = ['🍎','🐶','🌟','🦋','🌈','🐸','🌻','🍦','🦄','🎈'];
+const EMOJI = ['🥷','⭐','🌟','🎯','🔥','💨','🌙','🌊','⚡','🌀'];
 
 let selected = null;
 let a = 1, b = 1, correct = 0;

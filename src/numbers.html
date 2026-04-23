@@ -8,15 +8,14 @@
   <link rel="stylesheet" href="style.css" />
   <script src="sounds.js"></script>
   <style>
-    body { background: #f0fffe; }
-    nav  { background: #4ecdc4; }
-    .page-header h1 { color: #4ecdc4; }
+    nav  { background: #0a4a58; border-bottom-color: #00d2ff; }
+    .page-header h1 { color: #00d2ff; }
   </style>
 </head>
 <body>
 
 <nav>
-  <span class="logo">🌟 Math Fun</span>
+  <span class="logo">🥷 Ninja Math</span>
   <a href="index.html">Home</a>
   <a href="numbers.html" class="active">Numbers</a>
   <a href="addition.html">Addition</a>
@@ -25,13 +24,13 @@
 </nav>
 
 <div class="page-header">
-  <h1>🔢 Learn the Numbers!</h1>
-  <p>Click a number to see it up close, or play the Sequence Game!</p>
+  <h1>📜 Learn the Numbers!</h1>
+  <p>Click a scroll to reveal the number — or take on the Sequence Mission!</p>
 </div>
 
 <div class="tab-bar">
-  <button id="tab-learn" class="active" onclick="showSection('learn')">🔢 Learn Numbers</button>
-  <button id="tab-game" onclick="showSection('game')">🎮 Sequence Game</button>
+  <button id="tab-learn" class="active" onclick="showSection('learn')">📜 Scroll of Numbers</button>
+  <button id="tab-game" onclick="showSection('game')">🎯 Sequence Mission</button>
 </div>
 
 <!-- ── LEARN SECTION ── -->
@@ -46,25 +45,25 @@
   </p>
 
   <div class="seq-progress" id="seqProgress"></div>
-  <div class="win-banner"   id="winBanner">🎉 Amazing! You got them all right! 🎉</div>
+  <div class="win-banner"   id="winBanner">🥷 Mission Complete! All numbers restored! 🌟</div>
 
   <div class="seq-grid" id="seqGrid"></div>
 
-  <div class="bank-label">👇 Missing Numbers — click one to select it:</div>
+  <div class="bank-label">⭐ Missing Numbers — pick one to place it:</div>
   <div class="bank" id="seqBank"></div>
 
   <div class="seq-feedback" id="seqFeedback"></div>
 
-  <button class="new-game-btn" onclick="newSequenceGame()">🔀 New Game</button>
+  <button class="new-game-btn" onclick="newSequenceGame()">🥷 New Mission</button>
 </div>
 
 <!-- ── SPOTLIGHT MODAL ── -->
-<div id="spotlight" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:100; align-items:center; justify-content:center;">
-  <div style="background:#fff; border-radius:28px; padding:40px 50px; text-align:center; max-width:340px; width:90%; box-shadow:0 12px 40px rgba(0,0,0,.2);">
-    <div id="sp-num"  style="font-size:6rem; font-weight:900; color:#4ecdc4; line-height:1;"></div>
-    <div id="sp-word" style="font-size:1.6rem; font-weight:700; margin:8px 0 16px; text-transform:uppercase; letter-spacing:1px;"></div>
-    <div id="sp-dots" style="font-size:2rem; line-height:1.8; margin-bottom:20px;"></div>
-    <button onclick="closeSpotlight()" style="padding:10px 32px; border:none; border-radius:50px; background:#4ecdc4; color:#fff; font-size:1.1rem; font-weight:700; cursor:pointer;">Close ✕</button>
+<div id="spotlight" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:100; align-items:center; justify-content:center;">
+  <div style="background:#1e1e3a; border:2px solid #00d2ff; border-radius:28px; padding:40px 50px; text-align:center; max-width:340px; width:90%; box-shadow:0 12px 48px rgba(0,0,0,.7);">
+    <div id="sp-num"  style="font-size:6rem; font-weight:900; color:#00d2ff; line-height:1;"></div>
+    <div id="sp-word" style="font-size:1.6rem; font-weight:700; margin:8px 0 16px; text-transform:uppercase; letter-spacing:1px; color:#ffd700;"></div>
+    <div id="sp-dots" style="font-size:2rem; line-height:1.8; margin-bottom:20px; color:#f0f0f0;"></div>
+    <button onclick="closeSpotlight()" style="padding:10px 32px; border:none; border-radius:50px; background:#00d2ff; color:#12121e; font-size:1.1rem; font-weight:700; cursor:pointer;">Close ✕</button>
   </div>
 </div>
 
@@ -73,8 +72,8 @@ const WORDS = ['','One','Two','Three','Four','Five','Six','Seven','Eight',
                'Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen',
                'Sixteen','Seventeen','Eighteen','Nineteen','Twenty'];
 
-const EMOJI = ['🍎','🐶','🌟','🦋','🌈','🐸','🌻','🍦','🦄','🎈',
-               '🍕','🐙','🎀','🦁','🌙','🚀','🍓','🐬','🎵','🎉'];
+const EMOJI = ['🥷','⭐','🌟','🎯','🔥','💨','🌙','🌊','⚡','🌀',
+               '🌸','🎋','🏯','🐉','🗡️','⚔️','🎭','🏹','💫','🍣'];
 
 // ── BUILD LEARN GRID (10 × 2) ──────────────────────────────────────
 const grid = document.getElementById('grid');

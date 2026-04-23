@@ -7,15 +7,14 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="stylesheet" href="style.css" />
   <style>
-    body { background: #fff5f5; }
-    nav  { background: #ff6b6b; }
-    .page-header h1 { color: #ff6b6b; }
+    nav  { background: #500015; border-bottom-color: #e94560; }
+    .page-header h1 { color: #e94560; }
   </style>
 </head>
 <body>
 
 <nav>
-  <span class="logo">🌟 Math Fun</span>
+  <span class="logo">🥷 Ninja Math</span>
   <a href="index.html">Home</a>
   <a href="numbers.html">Numbers</a>
   <a href="addition.html">Addition</a>
@@ -24,8 +23,8 @@
 </nav>
 
 <div class="page-header">
-  <h1>➖ Subtraction!</h1>
-  <p>Take the number away and find the answer.</p>
+  <h1>🗡️ Subtraction!</h1>
+  <p>A ninja must subtract to conquer the enemy!</p>
 </div>
 
 <div class="game-wrap">
@@ -40,12 +39,12 @@
     <div class="eq" id="eq"></div>
     <div class="answer-row">
       <input type="number" id="ans" min="0" max="20" placeholder="?" autofocus />
-      <button class="check-btn" onclick="checkAnswer()">Check ✓</button>
+      <button class="check-btn" onclick="checkAnswer()">Strike! 🥷</button>
     </div>
   </div>
 
   <div class="feedback" id="feedback"></div>
-  <button class="next-btn" id="nextBtn" style="display:none" onclick="nextQuestion()">Next Question ▶</button>
+  <button class="next-btn" id="nextBtn" style="display:none" onclick="nextQuestion()">Next Mission ▶</button>
 </div>
 
 <script src="sounds.js"></script>

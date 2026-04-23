@@ -3,14 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Math Fun – Kids Learning</title>
+  <title>Ninja Math – Kids Learning</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── NINJA HOME ANIMATIONS ── */
+
+    /* Bobbing ninja in the hero title */
+    @keyframes ninjaBob {
+      0%, 100% { transform: translateY(0)    rotate(-6deg); }
+      50%       { transform: translateY(-12px) rotate(6deg);  }
+    }
+    .ninja-bob { display: inline-block; animation: ninjaBob 2.2s ease-in-out infinite; }
+
+    /* Hero text slides down on load */
+    @keyframes heroDropIn {
+      0%   { opacity: 0; transform: translateY(-36px) scale(.85); }
+      65%  { transform: translateY(6px) scale(1.04); }
+      100% { opacity: 1; transform: translateY(0)  scale(1); }
+    }
+    .hero h1 { animation: heroDropIn .7s .1s cubic-bezier(.22,.68,0,1.2) both; }
+    .hero p  { animation: heroDropIn .7s .3s cubic-bezier(.22,.68,0,1.2) both; }
+
+    /* Cards rise up one by one */
+    @keyframes cardRise {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0);    }
+    }
+    .card-grid .card { opacity: 0; animation: cardRise .55s ease forwards; }
+    .card-grid .card:nth-child(1) { animation-delay: .45s; }
+    .card-grid .card:nth-child(2) { animation-delay: .60s; }
+    .card-grid .card:nth-child(3) { animation-delay: .75s; }
+    .card-grid .card:nth-child(4) { animation-delay: .90s; }
+
+    /* Card icon spin on hover */
+    .card:hover .icon { display: inline-block; animation: iconSpin .4s ease; }
+    @keyframes iconSpin {
+      0%   { transform: rotate(0deg)   scale(1);    }
+      50%  { transform: rotate(180deg) scale(1.3);  }
+      100% { transform: rotate(360deg) scale(1);    }
+    }
+
+    /* Flying shuriken across the screen */
+    @keyframes flyRight {
+      0%   { transform: translateX(0)     rotate(0deg);   opacity: 0; }
+      8%   { opacity: 1; }
+      92%  { opacity: 1; }
+      100% { transform: translateX(115vw) rotate(900deg); opacity: 0; }
+    }
+    .shuriken {
+      position: fixed;
+      pointer-events: none;
+      z-index: 999;
+      animation: flyRight linear forwards;
+      will-change: transform;
+    }
+
+    /* Smoke-bomb puff on page load */
+    @keyframes smokePuff {
+      0%   { transform: scale(.2); opacity: .9; }
+      100% { transform: scale(4);  opacity: 0;  }
+    }
+    .smoke-puff {
+      position: fixed;
+      pointer-events: none;
+      z-index: 998;
+      font-size: 3.5rem;
+      animation: smokePuff .9s ease-out forwards;
+    }
+  </style>
 </head>
 <body>
 
 <nav>
-  <span class="logo">🌟 Math Fun</span>
+  <span class="logo">🥷 Ninja Math</span>
   <a href="index.html" class="active">Home</a>
   <a href="numbers.html">Numbers</a>
   <a href="addition.html">Addition</a>
@@ -19,28 +85,28 @@
 </nav>
 
 <div class="hero">
-  <h1>🎉 Welcome to Math Fun!</h1>
-  <p>Pick a topic and start learning. You can do it! ⭐</p>
+  <h1><span class="ninja-bob">🥷</span> Welcome to Ninja Math!</h1>
+  <p>Choose your mission, young ninja. You can do it! ⭐</p>
 </div>
 
 <div class="card-grid">
   <a class="card numbers" href="numbers.html">
-    <span class="icon">🔢</span>
+    <span class="icon">📜</span>
     <h2>Numbers</h2>
     <p>Learn numbers 1 – 20</p>
   </a>
   <a class="card addition" href="addition.html">
-    <span class="icon">➕</span>
+    <span class="icon">⚔️</span>
     <h2>Addition</h2>
     <p>Add numbers up to 20</p>
   </a>
   <a class="card subtraction" href="subtraction.html">
-    <span class="icon">➖</span>
+    <span class="icon">🗡️</span>
     <h2>Subtraction</h2>
     <p>Subtract numbers within 20</p>
   </a>
   <a class="card multiplication" href="multiplication.html">
-    <span class="icon">✖️</span>
+    <span class="icon">🌟</span>
     <h2>Multiplication</h2>
     <p>Times tables 1 – 10</p>
   </a>
@@ -48,10 +114,46 @@
 
 <script src="sounds.js"></script>
 <script>
+const SHURIKENS = ['⭐','🌟','💫','🌀'];
+
+function spawnShuriken() {
+  const el  = document.createElement('span');
+  el.className   = 'shuriken';
+  el.textContent = SHURIKENS[Math.floor(Math.random() * SHURIKENS.length)];
+  const size = 16 + Math.random() * 22;         // 16–38 px
+  const top  = 8  + Math.random() * 78;         // 8–86 % from top
+  const dur  = 2.4 + Math.random() * 2.8;       // 2.4–5.2 s
+  el.style.cssText = `font-size:${size}px; top:${top}%; left:-60px; animation-duration:${dur}s;`;
+  document.body.appendChild(el);
+  el.addEventListener('animationend', () => el.remove(), { once: true });
+}
+
+function spawnSmoke(x, y) {
+  const el  = document.createElement('span');
+  el.className   = 'smoke-puff';
+  el.textContent = '💨';
+  el.style.cssText = `left:${x}px; top:${y}px;`;
+  document.body.appendChild(el);
+  el.addEventListener('animationend', () => el.remove(), { once: true });
+}
+
 document.addEventListener('DOMContentLoaded', function () {
-  document.querySelectorAll('.card').forEach(el =>
-    el.addEventListener('click', playTap)
-  );
+  // Smoke puff in the hero on load
+  const hero = document.querySelector('.hero');
+  const rect = hero.getBoundingClientRect();
+  spawnSmoke(rect.left + rect.width * .45, rect.top + rect.height * .3);
+
+  // Periodic flying shurikens
+  setTimeout(() => {
+    spawnShuriken();
+    setInterval(spawnShuriken, 2400);
+  }, 1400);
+
+  // Sound on card click
+  document.querySelectorAll('.card').forEach(el => {
+    el.addEventListener('mouseenter', playHover);
+    el.addEventListener('click', playTap);
+  });
 });
 </script>
 </body>
