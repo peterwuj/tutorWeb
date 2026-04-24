@@ -131,7 +131,7 @@ function shuffle(arr) {
 }
 
 function newSequenceGame() {
-  const count = 5 + Math.floor(Math.random() * 4); // 5–8 missing numbers
+  const count = 8 + Math.floor(Math.random() * 5); // 8–12 missing numbers
   const removed = shuffle([...Array(20).keys()].map(i => i + 1)).slice(0, count);
   removedSet   = new Set(removed);
   totalRemoved = count;
@@ -209,6 +209,9 @@ function placeNumber(slotNum, cell) {
     selectedNum  = null;
     fb.textContent = pick(['Great! 🎉','Correct! ⭐','You got it! 🌟','Awesome! 🦄','Nice one! 👏']);
     fb.className   = 'seq-feedback correct';
+    numbersNinja.pose('correct', 1400).say(
+      pick(['Nice! ⭐','That\'s right! 🌟','Nailed it! 🥷','Yes! 💫','Correct! 🎯']), 1400
+    );
     updateProgress();
     if (removedSet.size === 0) showWin();
   } else {
@@ -218,6 +221,9 @@ function placeNumber(slotNum, cell) {
     setTimeout(() => cell.classList.remove('shake'), 450);
     fb.textContent = `Hmm, ${selectedNum} doesn't go there. Try a different box! 🤔`;
     fb.className   = 'seq-feedback wrong';
+    numbersNinja.pose('wrong', 1200).say(
+      pick(['Not there… 🤔','Try again! 💨','Keep looking! 🥷','Hmm, nope! 🌀']), 1600
+    );
   }
 }
 
@@ -231,9 +237,22 @@ function showWin() {
   playWin();
   document.getElementById('winBanner').style.display = 'block';
   document.getElementById('seqFeedback').textContent = '';
+  numbersNinja.pose('celebrate').say('Mission complete! 🥷🌟', 3500);
+  setTimeout(() => numbersNinja.pose('idle'), 3600);
 }
 
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+</script>
+
+<script src="ninja-avatar.js"></script>
+<script>
+  const ninjaCorner = Object.assign(document.createElement('div'), {
+    style: 'position:fixed;bottom:16px;right:16px;z-index:50'
+  });
+  document.body.appendChild(ninjaCorner);
+  const numbersNinja = new NinjaAvatar(ninjaCorner, { size: 110 });
+  numbersNinja.pose('wave').say('Count with me! 🥷', 2600);
+  setTimeout(() => numbersNinja.pose('idle'), 2800);
 </script>
 </body>
 </html>
