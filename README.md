@@ -10,7 +10,7 @@ An interactive preschool / early-elementary learning site with a ninja theme, co
 | Addition | Random equations within 20 with emoji visuals, score & streak tracking |
 | Subtraction | Random equations within 20 with crossed-out emoji visuals |
 | Multiplication | Times tables 1–10 with reference table and grid-style emoji visuals (a icons × b rows) |
-| Chinese | Beginner simplified characters in 4 categories (numbers 一–十, basic characters, family & everyday words, colors & animals) with pinyin, emoji visuals, zh-CN audio (speech synthesis), stroke-order animation (Hanzi Writer, CDN), and a character–picture Matching Mission with score & streak |
+| Chinese | Beginner simplified characters in 4 categories (numbers 一–十, basic characters, family & everyday words, colors & animals) with pinyin, emoji visuals, zh-CN audio (speech synthesis), stroke-order animation and finger/mouse stroke-tracing practice (Hanzi Writer quiz, CDN), and a character–picture Matching Mission with score & streak |
 
 ## Ninja Avatar
 
@@ -69,5 +69,4 @@ Open [`src/index.html`](src/index.html) directly in any browser — no build ste
 2. Go to Settings → Pages → set source to `main` branch, `/src` folder (if supported) or root
 3. Your site will be live at `https://<username>.github.io/tutorWeb/src/`
 
-**Netlify / Vercel / Cloudflare Pages**
-1. Connect the repo or dr
+**Netlify / Vercel 
