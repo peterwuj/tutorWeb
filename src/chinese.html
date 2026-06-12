@@ -78,6 +78,10 @@
       touch-action: none;        /* let Hanzi Writer capture touch drawing instead of scrolling */
       -webkit-user-select: none;
       user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
     }
     #sp-strokes .stroke-box.quiz-active {
       border-color: #00d2a0;
@@ -347,8 +351,11 @@ function setupWriters(word) {
     box.className = 'stroke-box';
     wrap.appendChild(box);
     strokeBoxes.push(box);
+    // Match the drawing area to the box's actual rendered size so the
+    // character stays centered on phones (CSS shrinks boxes via media query)
+    const inner = Math.max(80, box.clientWidth || 146);
     writers.push(HanziWriter.create(box, ch, {
-      width: 146, height: 146, padding: 8,
+      width: inner, height: inner, padding: Math.round(inner * 0.055),
       strokeColor: '#b02a30',
       outlineColor: '#e8d9c0',
       delayBetweenStrokes: 220,
