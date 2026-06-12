@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chinese – Ninja Learn</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="sounds.js"></script>
+  <!-- Hanzi Writer for stroke-order animations (optional; page works offline without it) -->
+  <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+  <style>
+    nav  { background: #5a3a0a; border-bottom-color: #ff9f1c; }
+    .page-header h1 { color: #ff9f1c; }
+
+    /* Category selector pills */
+    .cat-bar { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 0 20px 18px; }
+    .cat-bar button {
+      padding: 9px 20px;
+      border: 3px solid #ff9f1c;
+      border-radius: 50px;
+      background: #1e1e3a;
+      color: #ff9f1c;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .cat-bar button.sel { background: #ff9f1c; color: #12121e; box-shadow: 0 0 14px rgba(255,159,28,.5); }
+
+    /* Flashcard grid */
+    .hanzi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 14px;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 10px 24px 50px;
+    }
+    .hanzi-card {
+      background: #1e1e3a;
+      border: 3px solid #ff9f1c;
+      border-radius: 20px;
+      padding: 18px 10px 14px;
+      text-align: center;
+      cursor: pointer;
+      -webkit-user-select: none;
+      user-select: none;
+      box-shadow: 0 4px 14px rgba(0,0,0,.4);
+      transition: transform .15s, box-shadow .15s;
+    }
+    .hanzi-card:hover { transform: scale(1.06); box-shadow: 0 6px 20px rgba(255,159,28,.35); }
+    .hanzi-card .char   { font-size: 2.6rem; font-weight: 900; line-height: 1.15; color: #f0f0f0; }
+    .hanzi-card .pinyin { font-size: .95rem; font-weight: 700; color: #ff9f1c; margin-top: 4px; }
+    .hanzi-card .mean   { font-size: .82rem; color: #8090b0; margin-top: 2px; }
+    .hanzi-card .pic    { font-size: 1.5rem; margin-top: 6px; }
+
+    /* Spotlight modal */
+    #spotlight {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.75); z-index: 100;
+      align-items: center; justify-content: center;
+    }
+    .sp-box {
+      background: #1e1e3a; border: 2px solid #ff9f1c; border-radius: 28px;
+      padding: 28px 34px; text-align: center; max-width: 420px; width: 92%;
+      max-height: 92vh; overflow-y: auto;
+      box-shadow: 0 12px 48px rgba(0,0,0,.7);
+    }
+    #sp-char   { font-size: 4.6rem; font-weight: 900; color: #ff9f1c; line-height: 1.1; }
+    #sp-pinyin { font-size: 1.5rem; font-weight: 700; color: #ffd700; margin-top: 4px; }
+    #sp-mean   { font-size: 1.15rem; color: #f0f0f0; margin: 6px 0 12px; }
+    #sp-strokes { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 6px 0 14px; }
+    #sp-strokes .stroke-box {
+      width: 130px; height: 130px;
+      background: #fffdf5; border-radius: 16px;
+      border: 2px solid #ff9f1c;
+    }
+    .sp-btn {
+      padding: 10px 24px; border: none; border-radius: 50px;
+      font-size: 1rem; font-weight: 700; cursor: pointer; margin: 4px 5px;
+    }
+    .sp-btn.listen { background: #00d2a0; color: #12121e; }
+    .sp-btn.write  { background: #ffd700; color: #12121e; }
+    .sp-btn.close  { background: #ff9f1c; color: #12121e; }
+
+    /* Matching game options */
+    .opt-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 20px;
+    }
+    .opt-btn {
+      padding: 18px 10px;
+      border: 3px solid #ff9f1c;
+      border-radius: 18px;
+      background: #1e1e3a;
+      color: #f0f0f0;
+      font-size: 2rem;
+      font-weight: 900;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform .15s, box-shadow .15s, background .15s;
+    }
+    .opt-btn:hover  { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(255,159,28,.35); }
+    .opt-btn.right  { background: #003a2a; border-color: #00d2a0; color: #00d2a0; animation: pop .35s ease; }
+    .opt-btn.wrongPick { background: #3a0010; border-color: #e94560; color: #ff4a6a; }
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn .opt-sub { display: block; font-size: .85rem; font-weight: 700; color: #8090b0; margin-top: 4px; }
+
+    .q-prompt { font-size: 1.1rem; color: #8090b0; margin-bottom: 10px; }
+    .q-main   { font-size: 4.2rem; font-weight: 900; color: #ff9f1c; line-height: 1.15; }
+    .q-listen {
+      margin-top: 10px; padding: 8px 20px; border: none; border-radius: 50px;
+      background: #00d2a0; color: #12121e; font-size: .95rem; font-weight: 700; cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+      .hanzi-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 8px 14px 36px; }
+      .hanzi-card .char { font-size: 1.9rem; }
+      .hanzi-card .pinyin { font-size: .8rem; }
+      .hanzi-card .mean { font-size: .7rem; }
+      .cat-bar button { padding: 7px 13px; font-size: .8rem; }
+      .q-main { font-size: 3rem; }
+      .opt-btn { font-size: 1.5rem; padding: 14px 8px; }
+      #sp-strokes .stroke-box { width: 105px; height: 105px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="logo">🥷 Ninja Learn</span>
+  <a href="index.html">Home</a>
+  <a href="math.html">Math</a>
+  <a href="chinese.html" class="active">Chinese</a>
+</nav>
+
+<div class="page-header">
+  <h1>🀄 Learn Chinese!</h1>
+  <p>Tap a card to hear it, see it drawn stroke by stroke — or play the Matching Mission!</p>
+</div>
+
+<div class="cat-bar" id="catBar"></div>
+
+<div class="tab-bar">
+  <button id="tab-learn" class="active" onclick="showSection('learn')">🀄 Flashcards</button>
+  <button id="tab-game" onclick="showSection('game')">🎯 Matching Mission</button>
+</div>
+
+<!-- ── LEARN SECTION ── -->
+<div id="section-learn">
+  <div class="hanzi-grid" id="grid"></div>
+</div>
+
+<!-- ── MATCHING GAME SECTION ── -->
+<div id="section-game" style="display:none">
+  <div class="game-wrap">
+    <div class="score-bar">
+      <span>Score: <span id="score">0</span></span>
+      <span class="stars" id="stars"></span>
+      <span>Streak: <span id="streak">0</span> 🔥</span>
+    </div>
+
+    <div class="question-box">
+      <div class="q-prompt" id="qPrompt"></div>
+      <div class="q-main" id="qMain"></div>
+      <button class="q-listen" id="qListen" onclick="speakCurrent()">🔊 Listen</button>
+      <div class="opt-grid" id="optGrid"></div>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="nextBtn" style="display:none" onclick="newQuestion()">Next ➜</button>
+  </div>
+</div>
+
+<!-- ── SPOTLIGHT MODAL ── -->
+<div id="spotlight">
+  <div class="sp-box">
+    <div id="sp-char"></div>
+    <div id="sp-pinyin"></div>
+    <div id="sp-mean"></div>
+    <div id="sp-strokes"></div>
+    <div>
+      <button class="sp-btn listen" onclick="speakSpotlight()">🔊 Listen</button>
+      <button class="sp-btn write" id="sp-write-btn" onclick="animateStrokes()">✍️ Watch Strokes</button>
+      <button class="sp-btn close" onclick="closeSpotlight()">Close ✕</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CHARACTER DATA (simplified) ─────────────────────────────────────
+const CATEGORIES = {
+  numbers: { label: '🔢 Numbers', items: [
+    { char: '一', pinyin: 'yī',   mean: 'one',   pic: '1️⃣' },
+    { char: '二', pinyin: 'èr',   mean: 'two',   pic: '2️⃣' },
+    { char: '三', pinyin: 'sān',  mean: 'three', pic: '3️⃣' },
+    { char: '四', pinyin: 'sì',   mean: 'four',  pic: '4️⃣' },
+    { char: '五', pinyin: 'wǔ',   mean: 'five',  pic: '5️⃣' },
+    { char: '六', pinyin: 'liù',  mean: 'six',   pic: '6️⃣' },
+    { char: '七', pinyin: 'qī',   mean: 'seven', pic: '7️⃣' },
+    { char: '八', pinyin: 'bā',   mean: 'eight', pic: '8️⃣' },
+    { char: '九', pinyin: 'jiǔ',  mean: 'nine',  pic: '9️⃣' },
+    { char: '十', pinyin: 'shí',  mean: 'ten',   pic: '🔟' }
+  ]},
+  basic: { label: '⛰️ Basic Characters', items: [
+    { char: '人', pinyin: 'rén',  mean: 'person',   pic: '🧍' },
+    { char: '大', pinyin: 'dà',   mean: 'big',      pic: '🐘' },
+    { char: '小', pinyin: 'xiǎo', mean: 'small',    pic: '🐜' },
+    { char: '口', pinyin: 'kǒu',  mean: 'mouth',    pic: '👄' },
+    { char: '山', pinyin: 'shān', mean: 'mountain', pic: '⛰️' },
+    { char: '水', pinyin: 'shuǐ', mean: 'water',    pic: '💧' },
+    { char: '火', pinyin: 'huǒ',  mean: 'fire',     pic: '🔥' },
+    { char: '木', pinyin: 'mù',   mean: 'tree',     pic: '🌳' },
+    { char: '日', pinyin: 'rì',   mean: 'sun',      pic: '☀️' },
+    { char: '月', pinyin: 'yuè',  mean: 'moon',     pic: '🌙' },
+    { char: '手', pinyin: 'shǒu', mean: 'hand',     pic: '✋' },
+    { char: '心', pinyin: 'xīn',  mean: 'heart',    pic: '❤️' }
+  ]},
+  family: { label: '🏠 Family & Words', items: [
+    { char: '爸爸', pinyin: 'bà ba',   mean: 'dad',        pic: '👨' },
+    { char: '妈妈', pinyin: 'mā ma',   mean: 'mom',        pic: '👩' },
+    { char: '哥哥', pinyin: 'gē ge',   mean: 'big brother',pic: '👦' },
+    { char: '姐姐', pinyin: 'jiě jie', mean: 'big sister', pic: '👧' },
+    { char: '我',   pinyin: 'wǒ',      mean: 'I / me',     pic: '🙋' },
+    { char: '你',   pinyin: 'nǐ',      mean: 'you',        pic: '👉' },
+    { char: '好',   pinyin: 'hǎo',     mean: 'good',       pic: '👍' },
+    { char: '家',   pinyin: 'jiā',     mean: 'home',       pic: '🏠' },
+    { char: '爱',   pinyin: 'ài',      mean: 'love',       pic: '💖' },
+    { char: '谢谢', pinyin: 'xiè xie', mean: 'thank you',  pic: '🙏' }
+  ]},
+  colors: { label: '🐱 Colors & Animals', items: [
+    { char: '红', pinyin: 'hóng',  mean: 'red',    pic: '🔴' },
+    { char: '黄', pinyin: 'huáng', mean: 'yellow', pic: '🟡' },
+    { char: '蓝', pinyin: 'lán',   mean: 'blue',   pic: '🔵' },
+    { char: '绿', pinyin: 'lǜ',    mean: 'green',  pic: '🟢' },
+    { char: '白', pinyin: 'bái',   mean: 'white',  pic: '⚪' },
+    { char: '黑', pinyin: 'hēi',   mean: 'black',  pic: '⚫' },
+    { char: '猫', pinyin: 'māo',   mean: 'cat',    pic: '🐱' },
+    { char: '狗', pinyin: 'gǒu',   mean: 'dog',    pic: '🐶' },
+    { char: '鱼', pinyin: 'yú',    mean: 'fish',   pic: '🐟' },
+    { char: '鸟', pinyin: 'niǎo',  mean: 'bird',   pic: '🐦' },
+    { char: '马', pinyin: 'mǎ',    mean: 'horse',  pic: '🐴' },
+    { char: '兔', pinyin: 'tù',    mean: 'rabbit', pic: '🐰' }
+  ]}
+};
+
+let currentCat = 'numbers';
+
+// speakZh is provided by sounds.js (cross-browser Mandarin TTS)
+
+// ── CATEGORY BAR ────────────────────────────────────────────────────
+const catBar = document.getElementById('catBar');
+Object.keys(CATEGORIES).forEach(key => {
+  const b = document.createElement('button');
+  b.textContent = CATEGORIES[key].label;
+  b.id = `cat-${key}`;
+  if (key === currentCat) b.classList.add('sel');
+  b.addEventListener('mouseenter', playHover);
+  b.onclick = () => selectCategory(key);
+  catBar.appendChild(b);
+});
+
+function selectCategory(key) {
+  currentCat = key;
+  document.querySelectorAll('.cat-bar button').forEach(b => b.classList.remove('sel'));
+  document.getElementById(`cat-${key}`).classList.add('sel');
+  playTap();
+  buildGrid();
+  if (gameInitialized) newQuestion();
+}
+
+// ── FLASHCARD GRID ──────────────────────────────────────────────────
+function buildGrid() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  CATEGORIES[currentCat].items.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'hanzi-card';
+    card.innerHTML =
+      `<div class="char">${item.char}</div>` +
+      `<div class="pinyin">${item.pinyin}</div>` +
+      `<div class="mean">${item.mean}</div>` +
+      `<div class="pic">${item.pic}</div>`;
+    card.addEventListener('mouseenter', playHover);
+    card.onclick = () => openSpotlight(item);
+    grid.appendChild(card);
+  });
+}
+
+// ── SPOTLIGHT MODAL + STROKE ORDER ──────────────────────────────────
+let spotItem = null;
+let writers  = [];
+
+function openSpotlight(item) {
+  spotItem = item;
+  document.getElementById('sp-char').textContent   = item.char;
+  document.getElementById('sp-pinyin').textContent = item.pinyin;
+  document.getElementById('sp-mean').textContent   = `${item.pic}  ${item.mean}`;
+  document.getElementById('spotlight').style.display = 'flex';
+  speakZh(item.char);
+  setupWriters(item.char);
+}
+
+function setupWriters(word) {
+  const wrap = document.getElementById('sp-strokes');
+  wrap.innerHTML = '';
+  writers = [];
+  const writeBtn = document.getElementById('sp-write-btn');
+  if (typeof HanziWriter === 'undefined') {     // offline / CDN blocked
+    writeBtn.style.display = 'none';
+    return;
+  }
+  writeBtn.style.display = '';
+  [...word].forEach(ch => {
+    const box = document.createElement('div');
+    box.className = 'stroke-box';
+    wrap.appendChild(box);
+    writers.push(HanziWriter.create(box, ch, {
+      width: 126, height: 126, padding: 8,
+      strokeColor: '#b02a30',
+      outlineColor: '#e8d9c0',
+      delayBetweenStrokes: 220,
+      strokeAnimationSpeed: 1
+    }));
+  });
+}
+
+function animateStrokes() {
+  playTap();
+  let i = 0;
+  function next() {
+    if (i >= writers.length) return;
+    writers[i].animateCharacter({ onComplete: () => { i++; setTimeout(next, 300); } });
+  }
+  next();
+}
+
+function speakSpotlight() { if (spotItem) speakZh(spotItem.char); }
+
+function closeSpotlight() {
+  document.getElementById('spotlight').style.display = 'none';
+  spotItem = null;
+}
+document.getElementById('spotlight').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeSpotlight();
+});
+
+// ── TABS ────────────────────────────────────────────────────────────
+let gameInitialized = false;
+function showSection(which) {
+  document.getElementById('section-learn').style.display = which === 'learn' ? '' : 'none';
+  document.getElementById('section-game').style.display  = which === 'game'  ? '' : 'none';
+  document.getElementById('tab-learn').classList.toggle('active', which === 'learn');
+  document.getElementById('tab-game').classList.toggle('active', which === 'game');
+  if (which === 'game' && !gameInitialized) { newQuestion(); gameInitialized = true; }
+}
+
+// ── MATCHING GAME ───────────────────────────────────────────────────
+let score = 0, streak = 0;
+let answer = null, mode = 'char2pic', answered = false;
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function newQuestion() {
+  const items = CATEGORIES[currentCat].items;
+  answer   = pick(items);
+  mode     = Math.random() < 0.5 ? 'char2pic' : 'pic2char';
+  answered = false;
+
+  const others  = shuffle(items.filter(i => i !== answer)).slice(0, 3);
+  const options = shuffle([answer, ...others]);
+
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className   = 'feedback';
+  document.getElementById('nextBtn').style.display = 'none';
+
+  const qPrompt = document.getElementById('qPrompt');
+  const qMain   = document.getElementById('qMain');
+  if (mode === 'char2pic') {
+    qPrompt.textContent = 'What does this character mean?';
+    qMain.textContent   = answer.char;
+  } else {
+    qPrompt.textContent = 'Which character matches this picture?';
+    qMain.textContent   = answer.pic;
+  }
+
+  const optGrid = document.getElementById('optGrid');
+  optGrid.innerHTML = '';
+  options.forEach(item => {
+    const b = document.createElement('button');
+    b.className = 'opt-btn';
+    if (mode === 'char2pic') {
+      b.innerHTML = `${item.pic}<span class="opt-sub">${item.mean}</span>`;
+    } else {
+      b.innerHTML = `${item.char}<span class="opt-sub">${item.pinyin}</span>`;
+    }
+    b.addEventListener('mouseenter', playHover);
+    b.onclick = () => checkAnswer(item, b);
+    optGrid.appendChild(b);
+  });
+
+  speakZh(answer.char);
+}
+
+function speakCurrent() { if (answer) speakZh(answer.char); }
+
+function checkAnswer(item, btn) {
+  if (answered) return;
+  const fb = document.getElementById('feedback');
+  if (item === answer) {
+    answered = true;
+    playCorrect();
+    speakZh(answer.char);
+    btn.classList.add('right');
+    score++; streak++;
+    fb.textContent = pick(['好! Great! 🎉', '对了! Correct! ⭐', '太棒了! Awesome! 🌟', '你真厉害! Amazing! 🥷']);
+    fb.className   = 'feedback correct';
+    chineseNinja.pose('correct', 1400).say(pick(['好棒! ⭐', '对了! 🌟', 'Nice! 🥷', '真厉害! 💫']), 1400);
+    updateScore();
+    document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+    document.getElementById('nextBtn').style.display = '';
+    if (streak > 0 && streak % 5 === 0) {
+      playWin();
+      chineseNinja.pose('celebrate').say(`${streak} in a row! 🔥`, 2500);
+      setTimeout(() => chineseNinja.pose('idle'), 2600);
+    }
+  } else {
+    playWrong();
+    btn.classList.add('wrongPick', 'shake');
+    setTimeout(() => btn.classList.remove('shake'), 450);
+    streak = 0;
+    fb.textContent = 'Not quite — try again! 🤔';
+    fb.className   = 'feedback wrong';
+    chineseNinja.pose('wrong', 1200).say(pick(['再试试! 💨', 'Try again! 🥷', 'Hmm… 🌀']), 1600);
+    updateScore();
+  }
+}
+
+function updateScore() {
+  document.getElementById('score').textContent  = score;
+  document.getElementById('streak').textContent = streak;
+  document.getElementById('stars').textContent  = '⭐'.repeat(Math.min(score, 10));
+}
+
+// ── INIT ────────────────────────────────────────────────────────────
+buildGrid();
+</script>
+
+<script src="ninja-avatar.js"></script>
+<script>
+  const ninjaCorner = Object.assign(document.createElement('div'), {
+    style: 'position:fixed;bottom:16px;right:16px;z-index:50'
+  });
+  document.body.appendChild(ninjaCorner);
+  const chineseNinja = new NinjaAvatar(ninjaCorner, { size: 110 });
+  chineseNinja.pose('wave').say('你好! Let\'s learn Chinese! 🥷', 2600);
+  setTimeout(() => chineseNinja.pose('idle'), 2800);
+</script>
+</body>
+</html>

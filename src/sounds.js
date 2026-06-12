@@ -6,13 +6,28 @@
     return _ctx;
   }
 
-  // Eagerly resume AudioContext on the first user gesture so all
+  // Eagerly unlock the AudioContext on the first user gesture so all
   // subsequent sounds play immediately without an async delay.
-  ['click', 'touchstart', 'keydown'].forEach(function (evt) {
-    document.addEventListener(evt, function handler() {
-      getCtx().resume();
-      document.removeEventListener(evt, handler);
-    }, { once: true });
+  // Safari/iOS quirks handled here:
+  //  - resume() must be called synchronously inside a real user gesture
+  //  - iOS additionally requires playing a (silent) buffer inside the gesture
+  //  - 'touchend' / 'pointerdown' are more reliable triggers than 'touchstart'
+  var _unlocked = false;
+  function unlock() {
+    if (_unlocked) return;
+    var c = getCtx();
+    c.resume();
+    try {
+      var buf = c.createBuffer(1, 1, 22050);
+      var src = c.createBufferSource();
+      src.buffer = buf;
+      src.connect(c.destination);
+      src.start(0);
+    } catch (e) { /* ignore */ }
+    if (c.state === 'running') _unlocked = true;
+  }
+  ['pointerdown', 'touchend', 'touchstart', 'mousedown', 'click', 'keydown'].forEach(function (evt) {
+    document.addEventListener(evt, unlock, { passive: true });
   });
 
   // Schedule a single oscillator tone on an already-running context.
@@ -31,16 +46,23 @@
 
   // Resume if needed, then invoke fn(ctx). Handles the async resume
   // so notes are always scheduled against a running context.
+  // iOS can also put the context into an 'interrupted' state (phone call,
+  // Siri, backgrounding) -- treat anything that isn't 'running' as suspended.
   function play(fn) {
     const c = getCtx();
     if (c.state === 'running') {
       fn(c);
-    } else {
-      c.resume().then(function () { fn(c); });
+    } else if (c.resume) {
+      var p = c.resume();
+      if (p && p.then) {
+        p.then(function () { fn(c); }).catch(function () { /* stay silent */ });
+      } else {
+        fn(c);
+      }
     }
   }
 
-  // Soft hover blip — skipped silently if context not yet unlocked,
+  // Soft hover blip -- skipped silently if context not yet unlocked,
   // since hover cannot itself be a user gesture on most browsers.
   window.playHover = function () {
     if (!_ctx || _ctx.state !== 'running') return;
@@ -64,7 +86,7 @@
     });
   };
 
-  // Ascending C–E–G chime for correct answers
+  // Ascending C-E-G chime for correct answers
   window.playCorrect = function () {
     play(function (c) {
       [[523, 0], [659, 0.13], [784, 0.26]].forEach(function (p) {
@@ -90,7 +112,7 @@
     });
   };
 
-  // Four-note C–E–G–C fanfare for winning
+  // Four-note C-E-G-C fanfare for winning
   window.playWin = function () {
     play(function (c) {
       [[523, 0], [659, 0.15], [784, 0.30], [1047, 0.46]].forEach(function (p) {
@@ -99,16 +121,48 @@
     });
   };
 
-  // Speak a word/phrase using the browser's built-in text-to-speech engine.
-  // Slightly slower rate and raised pitch make it friendlier for young kids.
-  window.speak = function (text) {
+  // -- Text-to-speech, cross-browser --
+  // Safari/Chrome load voices asynchronously; cache them when ready.
+  var _voices = [];
+  function loadVoices() {
     if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();          // stop any in-progress speech
-    const u   = new SpeechSynthesisUtterance(text);
-    u.rate    = 0.88;
-    u.pitch   = 1.15;
-    u.volume  = 1;
-    window.speechSynthesis.speak(u);
+    _voices = window.speechSynthesis.getVoices() || [];
+  }
+  if (window.speechSynthesis) {
+    loadVoices();
+    if (typeof window.speechSynthesis.onvoiceschanged !== 'undefined') {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+  }
+
+  function speakUtterance(text, lang, rate, pitch) {
+    if (!window.speechSynthesis) return;
+    var synth = window.speechSynthesis;
+    synth.cancel();                 // stop any in-progress speech
+    if (synth.paused && synth.resume) synth.resume();   // Safari can get stuck paused
+
+    var u    = new SpeechSynthesisUtterance(text);
+    u.lang   = lang;
+    u.rate   = rate;
+    u.pitch  = pitch;
+    u.volume = 1;
+    if (!_voices.length) loadVoices();
+    var v = _voices.find(function (vo) { return vo.lang && vo.lang.indexOf(lang.split('-')[0]) === 0; });
+    if (v) u.voice = v;
+
+    // Safari sometimes drops an utterance queued in the same tick as cancel().
+    setTimeout(function () { synth.speak(u); }, 0);
+  }
+
+  // Speak a word/phrase in English. Slightly slower rate and raised
+  // pitch make it friendlier for young kids.
+  window.speak = function (text) {
+    speakUtterance(text, 'en-US', 0.88, 1.15);
+  };
+
+  // Speak Chinese text with a Mandarin voice when available.
+  window.speakZh = function (text) {
+    speakUtterance(text, 'zh-CN', 0.75, 1.05);
   };
 
   // Auto-attach hover blip to static interactive elements after DOM ready.

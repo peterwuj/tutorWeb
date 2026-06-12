@@ -62,10 +62,12 @@ nav .logo { font-size: 1.5rem; margin-right: auto; color: #ffd700; }
 .card h2   { font-size: 1.25rem; }
 .card p    { font-size: .9rem; color: #8090b0; margin-top: 6px; }
 
+.card.math          { border-color: #00d2ff; }
 .card.numbers       { border-color: #00d2ff; }
 .card.addition      { border-color: #ffd700; }
 .card.subtraction   { border-color: #e94560; }
 .card.multiplication{ border-color: #a855f7; }
+.card.chinese       { border-color: #ff9f1c; }
 
 /* ── PAGE HEADER ── */
 .page-header {
@@ -96,6 +98,7 @@ nav .logo { font-size: 1.5rem; margin-right: auto; color: #ffd700; }
   box-shadow: 0 4px 14px rgba(0,0,0,.4);
   transition: transform .15s, box-shadow .15s;
   border: 3px solid #00d2ff;
+  -webkit-user-select: none;
   user-select: none;
 }
 .num-card:hover { transform: scale(1.06); box-shadow: 0 6px 20px rgba(0,210,255,.3); }

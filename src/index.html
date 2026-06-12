@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ninja Math – Kids Learning</title>
+  <title>Ninja Learn – Kids Learning</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="stylesheet" href="style.css" />
   <style>
@@ -35,6 +35,7 @@
     .card-grid .card:nth-child(2) { animation-delay: .60s; }
     .card-grid .card:nth-child(3) { animation-delay: .75s; }
     .card-grid .card:nth-child(4) { animation-delay: .90s; }
+    .card-grid .card:nth-child(5) { animation-delay: 1.05s; }
 
     /* Card icon spin on hover */
     .card:hover .icon { display: inline-block; animation: iconSpin .4s ease; }
@@ -76,39 +77,27 @@
 <body>
 
 <nav>
-  <span class="logo">🥷 Ninja Math</span>
+  <span class="logo">🥷 Ninja Learn</span>
   <a href="index.html" class="active">Home</a>
-  <a href="numbers.html">Numbers</a>
-  <a href="addition.html">Addition</a>
-  <a href="subtraction.html">Subtraction</a>
-  <a href="multiplication.html">Multiplication</a>
+  <a href="math.html">Math</a>
+  <a href="chinese.html">Chinese</a>
 </nav>
 
 <div class="hero">
-  <h1><span class="ninja-bob">🥷</span> Welcome to Ninja Math!</h1>
+  <h1><span class="ninja-bob">🥷</span> Welcome to Ninja Learn!</h1>
   <p>Choose your mission, young ninja. You can do it! ⭐</p>
 </div>
 
 <div class="card-grid">
-  <a class="card numbers" href="numbers.html">
-    <span class="icon">📜</span>
-    <h2>Numbers</h2>
-    <p>Learn numbers 1 – 20</p>
+  <a class="card math" href="math.html">
+    <span class="icon">🧮</span>
+    <h2>Math</h2>
+    <p>Numbers, addition, subtraction &amp; multiplication</p>
   </a>
-  <a class="card addition" href="addition.html">
-    <span class="icon">⚔️</span>
-    <h2>Addition</h2>
-    <p>Add numbers up to 20</p>
-  </a>
-  <a class="card subtraction" href="subtraction.html">
-    <span class="icon">🗡️</span>
-    <h2>Subtraction</h2>
-    <p>Subtract numbers within 20</p>
-  </a>
-  <a class="card multiplication" href="multiplication.html">
-    <span class="icon">🌟</span>
-    <h2>Multiplication</h2>
-    <p>Times tables 1 – 10</p>
+  <a class="card chinese" href="chinese.html">
+    <span class="icon">🀄</span>
+    <h2>Chinese</h2>
+    <p>Beginner characters &amp; words</p>
   </a>
 </div>
 

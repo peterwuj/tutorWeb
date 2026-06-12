@@ -1,6 +1,6 @@
-# Ninja Math – Kids Learning Website
+# Ninja Learn – Kids Learning Website
 
-An interactive preschool / early-elementary math site with a ninja theme, covering numbers, addition, subtraction, and multiplication.
+An interactive preschool / early-elementary learning site with a ninja theme, covering numbers, addition, subtraction, multiplication, and beginner Chinese.
 
 ## Topics
 
@@ -10,6 +10,7 @@ An interactive preschool / early-elementary math site with a ninja theme, coveri
 | Addition | Random equations within 20 with emoji visuals, score & streak tracking |
 | Subtraction | Random equations within 20 with crossed-out emoji visuals |
 | Multiplication | Times tables 1–10 with reference table and grid-style emoji visuals (a icons × b rows) |
+| Chinese | Beginner simplified characters in 4 categories (numbers 一–十, basic characters, family & everyday words, colors & animals) with pinyin, emoji visuals, zh-CN audio (speech synthesis), stroke-order animation (Hanzi Writer, CDN), and a character–picture Matching Mission with score & streak |
 
 ## Ninja Avatar
 
@@ -41,11 +42,13 @@ ninja.say('Great job! ⭐', 2000); // speech bubble for 2000 ms
 ```
 tutorWeb/
 ├── src/
-│   ├── index.html          # Landing page
+│   ├── index.html          # Landing page (Math & Chinese entries)
+│   ├── math.html           # Math hub (numbers, addition, subtraction, multiplication)
 │   ├── numbers.html        # Numbers 1–20 + Sequence Mission
 │   ├── addition.html       # Addition practice
 │   ├── subtraction.html    # Subtraction practice
 │   ├── multiplication.html # Multiplication tables practice
+│   ├── chinese.html        # Beginner Chinese characters (flashcards + matching game)
 │   ├── style.css           # Shared styles
 │   ├── game.js             # Shared game logic (addition & subtraction)
 │   ├── ninja-avatar.js     # Self-contained ninja mascot component
@@ -67,6 +70,4 @@ Open [`src/index.html`](src/index.html) directly in any browser — no build ste
 3. Your site will be live at `https://<username>.github.io/tutorWeb/src/`
 
 **Netlify / Vercel / Cloudflare Pages**
-1. Connect the repo or drag-and-drop the `src/` folder
-2. Set the publish directory to `src`
-3. Deploy — a free subdomain is provided instantly
+1. Connect the repo or dr
