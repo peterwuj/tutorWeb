@@ -72,9 +72,21 @@
     #sp-mean   { font-size: 1.15rem; color: #f0f0f0; margin: 6px 0 12px; }
     #sp-strokes { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 6px 0 14px; }
     #sp-strokes .stroke-box {
-      width: 130px; height: 130px;
+      width: 150px; height: 150px;
       background: #fffdf5; border-radius: 16px;
       border: 2px solid #ff9f1c;
+      touch-action: none;        /* let Hanzi Writer capture touch drawing instead of scrolling */
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    #sp-strokes .stroke-box.quiz-active {
+      border-color: #00d2a0;
+      box-shadow: 0 0 12px rgba(0,210,160,.5);
+      cursor: crosshair;
+    }
+    #sp-practice-msg {
+      min-height: 26px; font-size: 1rem; font-weight: 700;
+      color: #00d2a0; margin-bottom: 8px;
     }
     .sp-btn {
       padding: 10px 24px; border: none; border-radius: 50px;
@@ -124,7 +136,7 @@
       .cat-bar button { padding: 7px 13px; font-size: .8rem; }
       .q-main { font-size: 3rem; }
       .opt-btn { font-size: 1.5rem; padding: 14px 8px; }
-      #sp-strokes .stroke-box { width: 105px; height: 105px; }
+      #sp-strokes .stroke-box { width: 130px; height: 130px; }
     }
   </style>
 </head>
@@ -139,7 +151,7 @@
 
 <div class="page-header">
   <h1>🀄 Learn Chinese!</h1>
-  <p>Tap a card to hear it, see it drawn stroke by stroke — or play the Matching Mission!</p>
+  <p>Tap a card to hear it, watch the strokes, practice writing with your finger or mouse — or play the Matching Mission!</p>
 </div>
 
 <div class="cat-bar" id="catBar"></div>
@@ -149,12 +161,12 @@
   <button id="tab-game" onclick="showSection('game')">🎯 Matching Mission</button>
 </div>
 
-<!-- ── LEARN SECTION ── -->
+<!-- LEARN SECTION -->
 <div id="section-learn">
   <div class="hanzi-grid" id="grid"></div>
 </div>
 
-<!-- ── MATCHING GAME SECTION ── -->
+<!-- MATCHING GAME SECTION -->
 <div id="section-game" style="display:none">
   <div class="game-wrap">
     <div class="score-bar">
@@ -175,23 +187,25 @@
   </div>
 </div>
 
-<!-- ── SPOTLIGHT MODAL ── -->
+<!-- SPOTLIGHT MODAL -->
 <div id="spotlight">
   <div class="sp-box">
     <div id="sp-char"></div>
     <div id="sp-pinyin"></div>
     <div id="sp-mean"></div>
     <div id="sp-strokes"></div>
+    <div id="sp-practice-msg"></div>
     <div>
       <button class="sp-btn listen" onclick="speakSpotlight()">🔊 Listen</button>
-      <button class="sp-btn write" id="sp-write-btn" onclick="animateStrokes()">✍️ Watch Strokes</button>
+      <button class="sp-btn write" id="sp-write-btn" onclick="animateStrokes()">✍️ Watch</button>
+      <button class="sp-btn write" id="sp-practice-btn" onclick="practiceStrokes()">🖌️ Practice</button>
       <button class="sp-btn close" onclick="closeSpotlight()">Close ✕</button>
     </div>
   </div>
 </div>
 
 <script>
-// ── CHARACTER DATA (simplified) ─────────────────────────────────────
+// CHARACTER DATA (simplified)
 const CATEGORIES = {
   numbers: { label: '🔢 Numbers', items: [
     { char: '一', pinyin: 'yī',   mean: 'one',   pic: '1️⃣' },
@@ -251,7 +265,7 @@ let currentCat = 'numbers';
 
 // speakZh is provided by sounds.js (cross-browser Mandarin TTS)
 
-// ── CATEGORY BAR ────────────────────────────────────────────────────
+// CATEGORY BAR
 const catBar = document.getElementById('catBar');
 Object.keys(CATEGORIES).forEach(key => {
   const b = document.createElement('button');
@@ -272,7 +286,7 @@ function selectCategory(key) {
   if (gameInitialized) newQuestion();
 }
 
-// ── FLASHCARD GRID ──────────────────────────────────────────────────
+// FLASHCARD GRID
 function buildGrid() {
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
@@ -290,9 +304,11 @@ function buildGrid() {
   });
 }
 
-// ── SPOTLIGHT MODAL + STROKE ORDER ──────────────────────────────────
-let spotItem = null;
-let writers  = [];
+// SPOTLIGHT MODAL + STROKE ORDER
+let spotItem   = null;
+let writers    = [];
+let strokeBoxes = [];
+let practicing = false;
 
 function openSpotlight(item) {
   spotItem = item;
@@ -304,32 +320,60 @@ function openSpotlight(item) {
   setupWriters(item.char);
 }
 
+function setPracticeMsg(text, isError) {
+  const el = document.getElementById('sp-practice-msg');
+  el.textContent  = text || '';
+  el.style.color  = isError ? '#e94560' : '#00d2a0';
+}
+
 function setupWriters(word) {
   const wrap = document.getElementById('sp-strokes');
   wrap.innerHTML = '';
-  writers = [];
-  const writeBtn = document.getElementById('sp-write-btn');
+  writers     = [];
+  strokeBoxes = [];
+  practicing  = false;
+  setPracticeMsg('');
+  const writeBtn    = document.getElementById('sp-write-btn');
+  const practiceBtn = document.getElementById('sp-practice-btn');
   if (typeof HanziWriter === 'undefined') {     // offline / CDN blocked
-    writeBtn.style.display = 'none';
+    writeBtn.style.display    = 'none';
+    practiceBtn.style.display = 'none';
     return;
   }
-  writeBtn.style.display = '';
+  writeBtn.style.display    = '';
+  practiceBtn.style.display = '';
   [...word].forEach(ch => {
     const box = document.createElement('div');
     box.className = 'stroke-box';
     wrap.appendChild(box);
+    strokeBoxes.push(box);
     writers.push(HanziWriter.create(box, ch, {
-      width: 126, height: 126, padding: 8,
+      width: 146, height: 146, padding: 8,
       strokeColor: '#b02a30',
       outlineColor: '#e8d9c0',
       delayBetweenStrokes: 220,
-      strokeAnimationSpeed: 1
+      strokeAnimationSpeed: 1,
+      // quiz (practice) options - forgiving for small hands
+      drawingColor: '#1a1a3a',
+      drawingWidth: 14,
+      leniency: 1.4,
+      showHintAfterMisses: 2,
+      highlightOnComplete: true,
+      highlightColor: '#00d2a0'
     }));
   });
 }
 
+function stopPractice() {
+  writers.forEach(w => { if (w.cancelQuiz) w.cancelQuiz(); });
+  strokeBoxes.forEach(b => b.classList.remove('quiz-active'));
+  practicing = false;
+}
+
 function animateStrokes() {
   playTap();
+  stopPractice();
+  setPracticeMsg('');
   let i = 0;
   function next() {
     if (i >= writers.length) return;
@@ -338,9 +382,49 @@ function animateStrokes() {
   next();
 }
 
+// STROKE PRACTICE (mouse & touch drawing via Hanzi Writer quiz)
+function practiceStrokes() {
+  if (!writers.length || practicing) return;
+  practicing = true;
+  playTap();
+  setPracticeMsg('🖌️ Trace each stroke in the box — follow the outline!');
+  let i = 0;
+
+  function quizNext() {
+    if (!practicing) return;             // modal closed mid-practice
+    if (i >= writers.length) {
+      practicing = false;
+      strokeBoxes.forEach(b => b.classList.remove('quiz-active'));
+      playWin();
+      speakZh(spotItem ? spotItem.char : '');
+      setPracticeMsg(pick(['太棒了! You wrote it! 🌟', '好极了! Beautiful writing! ✍️', '真厉害! Stroke master! 🥷']));
+      chineseNinja.pose('celebrate').say('你写得真好! ✍️', 2600);
+      setTimeout(() => chineseNinja.pose('idle'), 2800);
+      return;
+    }
+    strokeBoxes.forEach((b, k) => b.classList.toggle('quiz-active', k === i));
+    writers[i].quiz({
+      onCorrectStroke: () => playTap(),
+      onMistake: () => {
+        playWrong();
+        setPracticeMsg('Almost! Try that stroke again 🤔', true);
+        setTimeout(() => { if (practicing) setPracticeMsg('🖌️ Keep tracing — you can do it!'); }, 1200);
+      },
+      onComplete: () => {
+        playCorrect();
+        chineseNinja.pose('correct', 1200).say(pick(['好! ⭐', 'Nice strokes! 🖌️', '真棒! 🌟']), 1200);
+        i++;
+        setTimeout(quizNext, 500);
+      }
+    });
+  }
+  quizNext();
+}
+
 function speakSpotlight() { if (spotItem) speakZh(spotItem.char); }
 
 function closeSpotlight() {
+  stopPractice();
   document.getElementById('spotlight').style.display = 'none';
   spotItem = null;
 }
@@ -348,7 +432,7 @@ document.getElementById('spotlight').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeSpotlight();
 });
 
-// ── TABS ────────────────────────────────────────────────────────────
+// TABS
 let gameInitialized = false;
 function showSection(which) {
   document.getElementById('section-learn').style.display = which === 'learn' ? '' : 'none';
@@ -358,7 +442,7 @@ function showSection(which) {
   if (which === 'game' && !gameInitialized) { newQuestion(); gameInitialized = true; }
 }
 
-// ── MATCHING GAME ───────────────────────────────────────────────────
+// MATCHING GAME
 let score = 0, streak = 0;
 let answer = null, mode = 'char2pic', answered = false;
 
@@ -452,7 +536,7 @@ function updateScore() {
   document.getElementById('stars').textContent  = '⭐'.repeat(Math.min(score, 10));
 }
 
-// ── INIT ────────────────────────────────────────────────────────────
+// INIT
 buildGrid();
 </script>
 
